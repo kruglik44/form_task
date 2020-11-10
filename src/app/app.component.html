@@ -1,0 +1,62 @@
+<div class="header">
+  Teleform project
+</div>
+
+<div class="container">
+  <label class="label" [ngStyle]="{'color' : user.firstName ? '#1976d2' : 'red'}">Имя</label>
+  <input type="text" [ngStyle]="{'border-color' : user.firstName ? '#1976d2' : 'red'}" [(ngModel)] = "user.firstName">
+  <label class="label" [ngStyle]="{'color' : user.secondName ? '#1976d2' : 'red'}">Фамилия</label>
+  <input type="text" [ngStyle]="{'border-color' : user.secondName ? '#1976d2' : 'red'}" [(ngModel)] = "user.secondName">
+  <button *ngIf = "!showContactPart" [disabled] = "!(user.firstName && user.secondName)" class="myButton" (click) = "showContacts()">Далее</button>
+</div>
+
+<div *ngIf = "showContactPart" class="container">
+  <form [formGroup]="userContacts">
+    <label class="label" [ngStyle]="{'color' : !primPhone.errors?.required ? '#1976d2' : 'red'}">Телефон</label>
+    <input type="text" formControlName="userPhone" [ngStyle]="{'border-color' : !primPhone.errors?.required ? '#1976d2' : 'red'}">
+    <div *ngIf="(primPhone.invalid && primPhone.touched) || primPhone.dirty">
+    	<small *ngIf="primPhone.errors?.required" style="color: red;">Поле телефон обязательно для заполнения</small>
+    	<small *ngIf="primPhone.errors?.pattern" style="color: red;">Введите корректные данные</small>
+  	</div>
+    <label class="label" [ngStyle]="{'color' : !primEmail.errors?.required ? '#1976d2' : 'red'}">E-mail</label>
+    <input type="email" formControlName="userEmail" [ngStyle]="{'border-color' : !primEmail.errors?.required ? '#1976d2' : 'red'}">
+    <div *ngIf="(primEmail.invalid && primEmail.touched) || primEmail.dirty">
+    	<small *ngIf="primEmail.errors?.required" style="color: red;">Поле E-mail обязательно для заполнения</small>
+    	<small *ngIf="primEmail.errors?.pattern" style="color: red;">Введите корректные данные</small>
+  	</div>
+  </form>
+  <label class="label" [ngStyle]="{'color' : user.address ? '#1976d2' : 'red'}">Адрес</label>
+  <input type="text" (click) = "openMapModal()"  [ngStyle]="{'border-color' : user.address ? '#1976d2' : 'red'}" placeholder="{{user.address}}">
+  <div class="modal" [ngStyle] = "{'display': showMap ? 'block' : 'none' }">
+    <div class="modal-content">
+      <div class="map">
+        <ya-map (yaclick) = "findAddress($event)" [center]="[55.751952, 37.600739]" [zoom]="12"></ya-map>
+      </div>
+    </div>
+  </div>
+  <mat-form-field  appearance="fill">
+    <mat-label >Choose a date</mat-label>
+    <input matInput [matDatepicker]="picker" (dateChange)="updateDOB($event)"> 
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+  <br>
+  <button class="myButton" *ngIf = "!checkBoxContainer" (click) = "showCheckBox()" [disabled] = "!(user.address  && user.date)">Далее</button>
+</div>
+
+<div class="container" *ngIf = "checkBoxContainer">
+  <div class="box">
+    <input id="one" type="checkbox" [(ngModel)] = "user.DataProcessingAgreed">
+    <span class="check"></span>
+    <label for="one">Подтверждаю согласие на обработку персональных данных</label>
+  </div>
+  <div class="box">
+    <input id="two" type="checkbox" [(ngModel)] = "user.NotifyAgreed">
+    <span class="check"></span>
+    <label for="two">Оповещать, если по данному адресу найдены происшествия</label>
+  </div>
+  <button [disabled]  = "!user.DataProcessingAgreed" class="myButton" (click) = "sendData()">Отправить форму</button>
+</div>
+
+  
+
